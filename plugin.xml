@@ -88,9 +88,10 @@
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest">
-			<uses-permission android:name="android.permission.BLUETOOTH" />
-            <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-			<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+			    <uses-permission android:name="android.permission.BLUETOOTH" />
+          <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+			    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+          <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
@@ -101,12 +102,25 @@
 					<action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
 				</intent-filter>
 			</receiver>
-            <service android:enabled="true"
+          <receiver android:name="com.unarin.cordova.beacon.StartupBroadcastReceiver" >
+            <intent-filter>
+              <action android:name="android.intent.action.BOOT_COMPLETED" />
+              <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+              <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+            </intent-filter>
+          </receiver>
+          <service android:enabled="true"
                      android:exported="true"
                      android:isolatedProcess="false"
                      android:label="iBeacon"
                      android:name="org.altbeacon.beacon.service.BeaconService">
             </service>
+            <service android:enabled="true"
+                     android:exported="true"
+                     android:isolatedProcess="false"
+                     android:label="BackgroundBeaconService"
+                     android:name="com.unarin.cordova.beacon.BackgroundBeaconService">
+            </service>          
             <service android:enabled="true"
                      android:name="org.altbeacon.beacon.BeaconIntentProcessor">
                 <meta-data android:name="background" android:value="true" />
@@ -121,8 +135,10 @@
         <source-file src="src/android/IBeaconServiceNotifier.java" target-dir="src/com/unarin/cordova/beacon" />
         <source-file src="src/android/ILocationManagerCommand.java" target-dir="src/com/unarin/cordova/beacon" />
         <source-file src="src/android/PausableThreadPoolExecutor.java" target-dir="src/com/unarin/cordova/beacon" />
+        <source-file src="src/android/BackgroundBeaconService.java" target-dir="src/com/unarin/cordova/beacon" />
+        <source-file src="src/android/StartupBroadcastReceiver.java" target-dir="src/com/unarin/cordova/beacon" />
 
-		<source-file src="libs/android/altbeacon.jar" target-dir="libs" framework="true" />
+      <source-file src="libs/android/altbeacon.jar" target-dir="libs" framework="true" />
     </platform>
 
 </plugin>
