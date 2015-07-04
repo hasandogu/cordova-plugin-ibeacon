@@ -18,6 +18,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import org.altbeacon.beacon.*;
@@ -31,7 +32,7 @@ import org.altbeacon.beacon.startup.RegionBootstrap;
  */
 public class BackgroundBeaconService extends Service implements BootstrapNotifier {
     public static final String TAG = "com.unarin.cordova.beacon";
-    private boolean debugEnabled = true;
+    private boolean debugEnabled = false;
 
 	public BackgroundBeaconService() {
 		super();
@@ -84,8 +85,10 @@ public class BackgroundBeaconService extends Service implements BootstrapNotifie
 		// Simply constructing this class and holding a reference to it
 		// enables auto battery saving of about 60%
 		backgroundPowerSaver = new BackgroundPowerSaver(this);
-		
-		iBeaconManager.setDebug(true);
+
+		if(debugEnabled) {
+			iBeaconManager.setDebug(true);
+		}
 		
         wasInRegionSet = preferences.getBoolean("wasInRegion", false);
 		debugLog("wasInRegionSet was set to " + wasInRegionSet);
@@ -258,7 +261,7 @@ public class BackgroundBeaconService extends Service implements BootstrapNotifie
 	}
 	
 	private void cancelNotification() {
-		debugLog("Canceling notifications");
+		debugLog("Cancelling notifications");
 		
         Context context = getApplicationContext();
 		getNotificationManager(context).cancel(NOTIFICATION_ID); 
