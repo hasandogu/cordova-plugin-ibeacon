@@ -82,7 +82,6 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
 	private BluetoothAdapter bluetoothAdapter;
 	
 	private BackgroundBeaconService backgroundBeaconService;
-    boolean mBackgroundBeaconServiceBound = false;
 
 	private MonitorNotifier monitorNotifier;
 	
@@ -144,6 +143,22 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
     	
     	super.onDestroy(); 
     }
+	
+    @Override
+    public void onPause(boolean multitasking) {
+        super.onPause(multitasking);
+		
+		debugLog("Cordova Paused. Enabling BeaconManager BackgroundMode.");
+		iBeaconManager.setBackgroundMode(true);
+    }
+
+    @Override
+    public void onResume(boolean multitasking) {
+        super.onResume(multitasking);
+		
+		debugLog("Cordova Resumed. Disabling BeaconManager BackgroundMode.");
+		iBeaconManager.setBackgroundMode(false);
+    }	
 
     /** Defines callbacks for service binding, passed to bindService() */
     private ServiceConnection backgroundBeaconServiceConnection = new ServiceConnection() {
@@ -937,19 +952,34 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
     	});
 	}
 	
-	//NOT IMPLEMENTED: Manually request monitoring scan for region.
-	//This might not even be needed for Android as it should happen no matter what
 	private void requestStateForRegion(final JSONObject arguments, CallbackContext callbackContext) {
     	
 		_handleCallSafely(callbackContext, new ILocationManagerCommand() {
     		@Override
 			public PluginResult run() {
-    			
-    			//not supported on Android
-    			PluginResult result = new PluginResult(PluginResult.Status.ERROR, "Manual request for monitoring update is not supported on Android");
-				result.setKeepCallback(true);
-				return result;
- 				
+				try {
+					Region region = parseRegion(arguments);
+					
+					PluginResult result = null;
+					
+					if (backgroundBeaconService != null) {
+						backgroundBeaconService.requestStateForRegion(region);
+						
+						result = new PluginResult(PluginResult.Status.OK);
+					}		
+					else {
+						result = new PluginResult(PluginResult.Status.ERROR, "Background beacon service is not bound yet Android");
+					}
+
+					result.setKeepCallback(true);
+					return result;
+				} catch (JSONException e) {
+					debugWarn("'requestStateForRegion' JSON exception: "+ e.getMessage());
+					return new PluginResult(PluginResult.Status.ERROR,e.getMessage());
+				} catch (Exception e) {
+					debugWarn("'requestStateForRegion' exception "+e.getMessage());
+					return new PluginResult(PluginResult.Status.ERROR, e.getMessage());
+		        }							
 			}
     	});
 	}	
