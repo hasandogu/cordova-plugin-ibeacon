@@ -32,7 +32,7 @@ import org.altbeacon.beacon.startup.RegionBootstrap;
  */
 public class BackgroundBeaconService extends Service implements BootstrapNotifier {
     public static final String TAG = "com.unarin.cordova.beacon";
-    private boolean debugEnabled = false;
+    private boolean debugEnabled = true;
 
 	public BackgroundBeaconService() {
 		super();
@@ -78,7 +78,7 @@ public class BackgroundBeaconService extends Service implements BootstrapNotifie
 		
 		iBeaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
 		
-		iBeaconManager.setBackgroundBetweenScanPeriod(30000l);
+		iBeaconManager.setBackgroundBetweenScanPeriod(10000l);
 		iBeaconManager.setBackgroundScanPeriod(5000l);
 		setBackgroundMode(true);
 		
@@ -97,7 +97,7 @@ public class BackgroundBeaconService extends Service implements BootstrapNotifie
 		setWasInRegionPreference(false);
 		
 		// We should set this dynamically
-		Region region = new Region("backgroundRegion", Identifier.parse("5AFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF"), null, null);
+		Region region = new Region("backgroundRegion", Identifier.parse("E4007AB3-EFCA-4C89-A106-D4C4EC03DBD2"), null, null);
 		regionBootstrap = new RegionBootstrap(this, region);
 		debugLog("Created RegionBootstrap in BackgroundBeaconService.");
 	}
@@ -226,7 +226,7 @@ public class BackgroundBeaconService extends Service implements BootstrapNotifie
 	
 		PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-		String contentTitle = "Entered Beacon Region";
+		String contentTitle = "Entered Locopass Zone";
 		String contentText = "Touch to discover.";
 
         Notification.BigTextStyle style = new Notification.BigTextStyle()
@@ -239,15 +239,15 @@ public class BackgroundBeaconService extends Service implements BootstrapNotifie
 				.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE)
 				.setContentTitle(contentTitle)
 				.setContentText(contentText)
-				.setSmallIcon(getResIdForDrawable("ic_popup_reminder"))
+				.setSmallIcon(getResIdForDrawable("ic_notification_enter_zone"))
 				.setContentIntent(pIntent)
 				.setTicker(contentText)
 				.setAutoCancel(true)
 				.setStyle(style)
-				.setLights(getColor("FFFFFF"), 500, 500);
+				.setLights(getColor("0099FF"), 500, 500);
 				
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			builder.setColor(getColor("000000"));
+			builder.setColor(getColor("0099FF"));
 		}
 		else {
 			builder.setLargeIcon(getIconFromDrawable("icon"));
