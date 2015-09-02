@@ -432,6 +432,18 @@ LocationManager.prototype.isMonitoringAvailableForClass = function(region) {
 };
 
 /**
+ * Sets the notification options like local-notification.
+ *
+ * @param {Options} notification options
+ * 
+ * @return {Q.Promise} Returns a promise which is resolved as soon as the
+ * native layer acknowledged the setting of the notification options.
+ */
+LocationManager.prototype.setNotificationOptions = function(options) {
+	return this._promisedExec('setNotificationOptions', [options], []);
+};
+
+/**
  * Start advertising the specified region.
  *
  * If a region a different identifier is already being advertised for

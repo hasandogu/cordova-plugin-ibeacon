@@ -250,6 +250,8 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
         	registerDelegateCallbackId(args.optJSONObject(0), callbackContext);
         } else if (action.equals("isMonitoringAvailableForClass")) {
         	isMonitoringAvailableForClass(args.optJSONObject(0),callbackContext);
+        } else if (action.equals("setNotificationOptions")) {
+        	setNotificationOptions(args.optJSONObject(0), callbackContext);
         } else if (action.equals("isAdvertisingAvailable")) {
         	isAdvertisingAvailable(callbackContext);
         } else if (action.equals("isAdvertising")) {
@@ -276,6 +278,9 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
         iBeaconManager = BeaconManager.getInstanceForApplication(cordova.getActivity());
         iBeaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         iBeaconManager.bind(this);
+		
+		iBeaconManager.setForegroundScanPeriod(2200l);
+		iBeaconManager.setForegroundBetweenScanPeriod(1100l);
     }
     
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -1054,6 +1059,36 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
     	});		
 	}
 
+	/*
+	 * Sets notification options
+	 */
+	private void setNotificationOptions(final JSONObject arguments, final CallbackContext callbackContext) {
+		_handleCallSafely(callbackContext, new ILocationManagerCommand() {
+
+    		@Override
+			public PluginResult run() {
+    			try {
+					PluginResult result = null;
+					
+					if(backgroundBeaconService != null) {
+						backgroundBeaconService.setNotificationOptions(arguments);
+						result = new PluginResult(PluginResult.Status.OK);
+					}
+					else {
+						result = new PluginResult(PluginResult.Status.ERROR, "Background beacon service is not bound yet Android");
+					}
+					
+					result.setKeepCallback(true);
+					return result;
+			
+    			} catch (Exception e) {
+					debugWarn("'setNotificationOptions' exception "+e.getMessage());
+					return new PluginResult(PluginResult.Status.ERROR, e.getMessage());
+		        }
+			}
+    	});		
+	}
+	
     private void isAdvertisingAvailable(CallbackContext callbackContext) {
     	
 		_handleCallSafely(callbackContext, new ILocationManagerCommand() {

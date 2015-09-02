@@ -27,6 +27,9 @@ import org.altbeacon.beacon.service.BeaconService;
 import org.altbeacon.beacon.startup.BootstrapNotifier;
 import org.altbeacon.beacon.startup.RegionBootstrap;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by Tom on 01/06/2015.
  */
@@ -53,6 +56,8 @@ public class BackgroundBeaconService extends Service implements BootstrapNotifie
     private final IBinder mBinder = new BackgroundBeaconServiceBinder();	
 	
     private final int NOTIFICATION_ID = 1;	
+	
+	private NotificationOptions notificationOptions;
 
     /**
      * Class used for the client Binder.  Because we know this service always
@@ -95,6 +100,8 @@ public class BackgroundBeaconService extends Service implements BootstrapNotifie
 
 		// We read the preference, set that back to false now
 		setWasInRegionPreference(false);
+		
+		notificationOptions = new NotificationOptions(ctx);
 		
 		// We should set this dynamically
 		Region region = new Region("backgroundRegion", Identifier.parse("E4007AB3-EFCA-4C89-A106-D4C4EC03DBD2"), null, null);
@@ -166,7 +173,12 @@ public class BackgroundBeaconService extends Service implements BootstrapNotifie
 		debugLog("Setting background mode to: " + backgroundMode);
 		iBeaconManager.setBackgroundMode(backgroundMode);
 	}
-	
+
+	public void setNotificationOptions(JSONObject options) {
+		debugLog("Setting notificationOptions to" + options.toString());
+		this.notificationOptions.parseAndSave(options);
+	}
+
 	@Override
 	public Context getApplicationContext() {
 		return this.getApplication().getApplicationContext();
@@ -226,8 +238,8 @@ public class BackgroundBeaconService extends Service implements BootstrapNotifie
 	
 		PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-		String contentTitle = "Entered Locopass Zone";
-		String contentText = "Touch to discover.";
+		String contentTitle = notificationOptions.getTitle();
+		String contentText = notificationOptions.getText();
 
         Notification.BigTextStyle style = new Notification.BigTextStyle()
                 .bigText(contentText);	
@@ -239,15 +251,16 @@ public class BackgroundBeaconService extends Service implements BootstrapNotifie
 				.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE)
 				.setContentTitle(contentTitle)
 				.setContentText(contentText)
-				.setSmallIcon(getResIdForDrawable("ic_notification_enter_zone"))
+				.setSmallIcon(getResIdForDrawable(notificationOptions.getSmallIcon()))
 				.setContentIntent(pIntent)
 				.setTicker(contentText)
-				.setAutoCancel(true)
+				.setAutoCancel(notificationOptions.isAutoClear())
+				.setOngoing(notificationOptions.isOngoing())
 				.setStyle(style)
-				.setLights(getColor("0099FF"), 500, 500);
+				.setLights(getColor(notificationOptions.getLedColor()), notificationOptions.getLedOnMs(), notificationOptions.getLedOffMs());
 				
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			builder.setColor(getColor("0099FF"));
+			builder.setColor(getColor(notificationOptions.getColor()));
 		}
 		else {
 			builder.setLargeIcon(getIconFromDrawable("icon"));
@@ -255,7 +268,7 @@ public class BackgroundBeaconService extends Service implements BootstrapNotifie
 				
 		Notification n = builder.build();
 
-		getNotificationManager(context).notify(NOTIFICATION_ID, n); 
+		getNotificationManager(context).notify(notificationOptions.getId(), n); 
 		
 		debugLog("Notifying the user");
 	}
