@@ -149,6 +149,13 @@ public class NotificationOptions
         return options.optInt("ledOffMs", 500);
     }
 
+	/**
+     * Led Off Ms
+     */
+    public int getVisibility() {
+        return options.optInt("visibility", 0);
+    }
+	
    /**
      * JSON object as string.
      */
