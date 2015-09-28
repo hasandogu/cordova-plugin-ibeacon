@@ -35,7 +35,7 @@ import org.json.JSONObject;
  */
 public class BackgroundBeaconService extends Service implements BootstrapNotifier {
     public static final String TAG = "com.unarin.cordova.beacon";
-    private boolean debugEnabled = true;
+    private boolean debugEnabled = false;
 
 	public BackgroundBeaconService() {
 		super();
@@ -83,8 +83,8 @@ public class BackgroundBeaconService extends Service implements BootstrapNotifie
 		
 		iBeaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
 		
-		iBeaconManager.setBackgroundBetweenScanPeriod(10000l);
-		iBeaconManager.setBackgroundScanPeriod(5000l);
+		iBeaconManager.setBackgroundBetweenScanPeriod(45000l);
+		iBeaconManager.setBackgroundScanPeriod(8000l);
 		setBackgroundMode(true);
 		
 		// Simply constructing this class and holding a reference to it
@@ -243,7 +243,7 @@ public class BackgroundBeaconService extends Service implements BootstrapNotifie
 
         Notification.BigTextStyle style = new Notification.BigTextStyle()
                 .bigText(contentText);	
-		
+				
 		// build notification
 		// the addAction re-use the same intent to keep the example short
 		// We need to be using the translated versions of these sentences!
@@ -259,6 +259,22 @@ public class BackgroundBeaconService extends Service implements BootstrapNotifie
 				.setStyle(style)
 				.setLights(getColor(notificationOptions.getLedColor()), notificationOptions.getLedOnMs(), notificationOptions.getLedOffMs())
 				.setVisibility(notificationOptions.getVisibility());
+		
+		String soundPath = notificationOptions.getSoundPath();
+		
+		if(soundPath != null && !soundPath.isEmpty()) {
+			Uri soundUri = getSoundUri("android.resource://" + pkgName + '/' +soundPath);
+			
+			debugLog(soundPath);		
+			
+			if (soundUri != null) {
+				
+				debugLog(soundUri.toString());
+				
+				builder.setSound(soundUri);
+				builder.setDefaults(Notification.DEFAULT_VIBRATE);
+			}
+		}
 				
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			builder.setColor(getColor(notificationOptions.getColor()));

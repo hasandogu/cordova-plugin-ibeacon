@@ -156,6 +156,13 @@ public class NotificationOptions
         return options.optInt("visibility", 0);
     }
 	
+    /**
+     * Text for the local notification.
+     */
+    public String getSoundPath() {
+        return options.optString("soundPath", "");
+    }
+	
    /**
      * JSON object as string.
      */

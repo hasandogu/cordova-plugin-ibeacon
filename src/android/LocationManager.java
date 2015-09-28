@@ -74,7 +74,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
     private BlockingQueue<Runnable> queue;
     private PausableThreadPoolExecutor threadPoolExecutor;
     
-    private boolean debugEnabled = true;
+    private boolean debugEnabled = false;
     private IBeaconServiceNotifier beaconServiceNotifier; 
     
     //listener for changes in state for system Bluetooth service

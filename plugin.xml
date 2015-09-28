@@ -112,13 +112,13 @@
           <service android:enabled="true"
                      android:exported="true"
                      android:isolatedProcess="false"
-                     android:label="iBeacon"
+                     android:label="Beacon Service"
                      android:name="org.altbeacon.beacon.service.BeaconService">
             </service>
             <service android:enabled="true"
                      android:exported="true"
                      android:isolatedProcess="false"
-                     android:label="BackgroundBeaconService"
+                     android:label="Zone Service"
                      android:name="com.unarin.cordova.beacon.BackgroundBeaconService">
             </service>          
             <service android:enabled="true"
