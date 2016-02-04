@@ -43,6 +43,10 @@
 - (void) initLocationManager {
     self.locationManager = [[CLLocationManager alloc] init];
     self.locationManager.delegate = self;
+
+    if (IsAtLeastiOSVersion(@"9.0")) {
+        self.locationManager.allowsBackgroundLocationUpdates = YES;
+    }	 
 }
 
 - (void) initPeripheralManager {
@@ -421,6 +425,11 @@
         [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand* command) {
 
             [self.locationManager requestAlwaysAuthorization];
+			
+			// For iOS 9.1
+			// https://github.com/qwook/cordova-plugin-ibeacon/commit/832f5d91d93d34050b61a564b921eb7f0e6a946c
+			// http://stackoverflow.com/a/33525438/4353620
+			[self.locationManager startUpdatingLocation];
 
             return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
 
