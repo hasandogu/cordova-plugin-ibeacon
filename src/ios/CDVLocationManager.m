@@ -36,8 +36,6 @@
     
     self.debugLogEnabled = true;
     self.debugNotificationsEnabled = false;
-    
-    [self resumeEventPropagationToDom]; // DOM propagation when Location Manager, PeripheralManager initiated
 }
 
 - (void) initLocationManager {
@@ -94,20 +92,26 @@
 
 - (void)locationManager:(CLLocationManager *)manager didDetermineState:(CLRegionState)state forRegion:(CLRegion *)region {
     
-    [self.commandDelegate runInBackground:^{
+    [self.queue addOperationWithBlock:^{
         
-        [[self getLogger] debugLog:@"didDetermineState: %@ for region: %@", [self regionStateAsString:state], region];
+        [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
         
-        NSMutableDictionary* dict = [NSMutableDictionary new];
-        
-        [dict setObject: [self jsCallbackNameForSelector:_cmd] forKey:@"eventType"];
-        [dict setObject:[self mapOfRegion:region] forKey:@"region"];
-        [dict setObject:[self regionStateAsString:state] forKey:@"state"];
-        
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
-        [pluginResult setKeepCallbackAsBool:YES];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.delegateCallbackId];
+			[[self getLogger] debugLog:@"didDetermineState: %@ for region: %@", [self regionStateAsString:state], region];
+			[[self getLogger] debugNotification:@"didDetermineState: %@ for", [self regionStateAsString:state]];
+			
+			NSMutableDictionary* dict = [NSMutableDictionary new];
+			
+			[dict setObject: [self jsCallbackNameForSelector:_cmd] forKey:@"eventType"];
+			[dict setObject:[self mapOfRegion:region] forKey:@"region"];
+			[dict setObject:[self regionStateAsString:state] forKey:@"state"];
+			
+			CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
+			[pluginResult setKeepCallbackAsBool:YES];
+            return pluginResult;
+			
+        } :nil :NO :self.delegateCallbackId];
     }];
+	
 }
 
 -(void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {
