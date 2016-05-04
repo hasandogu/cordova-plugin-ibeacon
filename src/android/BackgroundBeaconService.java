@@ -34,7 +34,7 @@ import org.json.JSONObject;
  * Created by Tom on 01/06/2015.
  */
 public class BackgroundBeaconService extends Service implements BootstrapNotifier {
-    public static final String TAG = "com.unarin.cordova.beacon";
+    public static final String TAG = "com.unarin.beacon";
     private boolean debugEnabled = false;
 
 	public BackgroundBeaconService() {
