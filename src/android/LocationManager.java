@@ -903,11 +903,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
 					beaconServiceNotifier.didStartMonitoringForRegion(region);
 					return result;
 					
-				} catch (RemoteException e) {
-                    Log.e(TAG, "'startMonitoringForRegion' service error: " + e.getCause());
-                    beaconServiceNotifier.monitoringDidFailForRegion(region, e);
-                    return new PluginResult(PluginResult.Status.ERROR, e.getMessage());
-                } catch (Exception e) {
+				} catch (Exception e) {
 					Log.e(TAG, "'startMonitoringForRegion' exception "+e.getCause());
 					beaconServiceNotifier.monitoringDidFailForRegion(region, e);
 					return new PluginResult(PluginResult.Status.ERROR, e.getMessage());
@@ -935,10 +931,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
 					result.setKeepCallback(true);
 					return result;
 					
-				} catch (RemoteException e) {
-                    Log.e(TAG, "'stopMonitoringForRegion' service error: " + e.getCause());
-                    return new PluginResult(PluginResult.Status.ERROR, e.getMessage());
-                } catch (Exception e) {
+				} catch (Exception e) {
 					Log.e(TAG, "'stopMonitoringForRegion' exception "+e.getCause());
 					return new PluginResult(PluginResult.Status.ERROR, e.getMessage());
 		        }
