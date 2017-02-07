@@ -136,17 +136,17 @@ public class NotificationOptions
     }
 
     /**
-     * Led On Ms
+     * Led On Time
      */
-    public int getLedOnMs() {
-        return options.optInt("ledOnMs", 500);
+    public int getLedOnTime() {
+        return options.optInt("ledOnTime", 500);
     }
 
 	/**
-     * Led Off Ms
+     * Led Off Time
      */
-    public int getLedOffMs() {
-        return options.optInt("ledOffMs", 500);
+    public int getLedOffTime() {
+        return options.optInt("ledOffTime", 500);
     }
 
 	/**

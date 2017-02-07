@@ -257,7 +257,7 @@ public class BackgroundBeaconService extends Service implements BootstrapNotifie
 				.setAutoCancel(notificationOptions.isAutoClear())
 				.setOngoing(notificationOptions.isOngoing())
 				.setStyle(style)
-				.setLights(getColor(notificationOptions.getLedColor()), notificationOptions.getLedOnMs(), notificationOptions.getLedOffMs())
+				.setLights(getColor(notificationOptions.getLedColor()), notificationOptions.getLedOnTime(), notificationOptions.getLedOffTime())
 				.setVisibility(notificationOptions.getVisibility());
 		
 		String soundPath = notificationOptions.getSoundPath();
